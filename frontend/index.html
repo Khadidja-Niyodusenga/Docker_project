@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Docker Full-Stack Student System</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; font-family: Arial, sans-serif; background: #f3f6fb;
+      color: #172033; min-height: 100vh; display: grid; place-items: center;
+      padding: 24px;
+    }
+    main {
+      width: min(760px, 100%); background: white; padding: 32px;
+      border-radius: 16px; box-shadow: 0 12px 35px #15284a18;
+    }
+    h1 { margin-top: 0; color: #1769aa; }
+    p { line-height: 1.6; color: #4b5563; }
+    button {
+      border: 0; border-radius: 8px; padding: 12px 18px;
+      background: #1769aa; color: white; font-weight: bold; cursor: pointer;
+    }
+    button:hover { background: #105487; }
+    #result {
+      margin-top: 22px; padding: 16px; background: #f3f8fc;
+      border-radius: 10px; min-height: 70px;
+    }
+    .student { padding: 10px 0; border-bottom: 1px solid #dce5ef; }
+    .student:last-child { border-bottom: 0; }
+    .status { font-size: 14px; color: #167a43; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Student Information System</h1>
+    <p>Welcome! This frontend is served by Nginx in its own Docker container.
+       Select the button to request student records from the Python Flask backend.</p>
+    <button id="loadStudents">Load students from backend</button>
+    <div id="result" aria-live="polite">
+      Select the button to communicate with the backend API.
+    </div>
+    <p class="status">Frontend status: running in a Docker container.</p>
+  </main>
+  <script>
+    const button = document.getElementById("loadStudents");
+    const result = document.getElementById("result");
+
+    button.addEventListener("click", async () => {
+      result.textContent = "Contacting backend API...";
+      try {
+        const response = await fetch("/api/students");
+        if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
+        const data = await response.json();
+
+        result.replaceChildren();
+        const heading = document.createElement("h2");
+        heading.textContent = data.application;
+        result.appendChild(heading);
+
+        data.students.forEach(student => {
+          const item = document.createElement("div");
+          item.className = "student";
+          item.textContent = `${student.id}. ${student.name} — ${student.program}`;
+          result.appendChild(item);
+        });
+      } catch (error) {
+        result.textContent = `Could not contact backend: ${error.message}`;
+      }
+    });
+  </script>
+</body>
+</html>
