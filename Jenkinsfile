@@ -11,26 +11,17 @@ pipeline {
         stage('Docker Diagnosis') {
     steps {
         sh '''
-            echo "=== USER ==="
-            whoami
-
-            echo "=== HOSTNAME ==="
+            echo "=== PIPELINE HOSTNAME ==="
             hostname
 
-            echo "=== PATH ==="
-            echo $PATH
+            echo "=== PROCESS INFORMATION ==="
+            cat /proc/1/cgroup
 
-            echo "=== DOCKER FILE ==="
-            ls -l /usr/bin/docker || true
+            echo "=== MOUNT INFORMATION ==="
+            grep -E "docker.sock|/var/jenkins_home" /proc/self/mountinfo || true
 
-            echo "=== DOCKER COMMAND ==="
-            command -v docker || true
-
-            echo "=== DOCKER VERSION ==="
-            docker --version || true
-
-            echo "=== DOCKER SOCKET ==="
-            ls -l /var/run/docker.sock || true
+            echo "=== JENKINS VARIABLES ==="
+            env | grep -E 'JENKINS|NODE|WORKSPACE|EXECUTOR' || true
         '''
     }
 }
