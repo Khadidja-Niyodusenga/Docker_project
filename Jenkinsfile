@@ -79,6 +79,7 @@ pipeline {
         }
 
        
+
 stage('Deploy') {
     steps {
         sh '''
@@ -87,14 +88,13 @@ stage('Deploy') {
                 docker network create student-network
 
             echo "=== REMOVE OLD CONTAINERS ==="
-            docker rm -f student-frontend student-backend || true
+            docker rm -f student-frontend student-backend backend || true
 
             echo "=== START BACKEND ==="
             docker run -d \
-                --name student-backend \
+                --name backend \
                 --restart unless-stopped \
                 --network student-network \
-                -p 5001:5000 \
                 student-backend:1.0
 
             echo "=== START FRONTEND ==="
@@ -107,6 +107,7 @@ stage('Deploy') {
         '''
     }
 }
+
 
 
         stage('Verify') {
