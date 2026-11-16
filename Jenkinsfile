@@ -78,34 +78,36 @@ pipeline {
             }
         }
 
-        stage('Deploy') {
-            steps {
-                sh '''
-                    echo "=== CREATE NETWORK ==="
-                    docker network inspect student-network >/dev/null 2>&1 || \
-                        docker network create student-network
+       
+stage('Deploy') {
+    steps {
+        sh '''
+            echo "=== CREATE NETWORK ==="
+            docker network inspect student-network >/dev/null 2>&1 || \
+                docker network create student-network
 
-                    echo "=== REMOVE OLD CONTAINERS ==="
-                    docker rm -f student-frontend student-backend || true
+            echo "=== REMOVE OLD CONTAINERS ==="
+            docker rm -f student-frontend student-backend || true
 
-                    echo "=== START BACKEND ==="
-                    docker run -d \
-                        --name student-backend \
-                        --restart unless-stopped \
-                        --network student-network \
-                        -p 5001:5000 \
-                        student-backend:1.0
+            echo "=== START BACKEND ==="
+            docker run -d \
+                --name student-backend \
+                --restart unless-stopped \
+                --network student-network \
+                -p 5001:5000 \
+                student-backend:1.0
 
-                    echo "=== START FRONTEND ==="
-                    docker run -d \
-                        --name student-frontend \
-                        --restart unless-stopped \
-                        --network student-network \
-                        -p 8084:80 \
-                        student-frontend:1.0
-                '''
-            }
-        }
+            echo "=== START FRONTEND ==="
+            docker run -d \
+                --name student-frontend \
+                --restart unless-stopped \
+                --network student-network \
+                -p 8084:80 \
+                student-frontend:1.0
+        '''
+    }
+}
+
 
         stage('Verify') {
             steps {
