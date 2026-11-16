@@ -102,7 +102,7 @@ stage('Deploy') {
                 --name student-frontend \
                 --restart unless-stopped \
                 --network student-network \
-                -p 8084:80 \
+                -p 8085:80 \
                 student-frontend:1.0
         '''
     }
