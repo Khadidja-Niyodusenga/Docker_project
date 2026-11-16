@@ -19,7 +19,7 @@ def students():
         "students": [
             {"id": 1, "name": "Adeline UMUTONI", "program": "Information Technology"},
             {"id": 2, "name": "Joseph MAHEREZO", "program": "Software Development"},
-            {"id": 3, "name": "Vincent NIYOMIZERO", "program": "Networking"}
+            {"id": 3, "name": "Vincent MIZERO", "program": "Networking"}
         ]
     })
 
