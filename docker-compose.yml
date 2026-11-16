@@ -1,11 +1,40 @@
+# services:
+#   backend:
+#     build:
+#       context: ./backend
+#     image: student-backend:1.0
+#     container_name: student-backend
+#     expose:
+#       - "5000"
+#     networks:
+#       - student-network
+
+#   frontend:
+#     build:
+#       context: ./frontend
+#     image: student-frontend:1.0
+#     container_name: student-frontend
+#     ports:
+#       - "8081:80"
+#     depends_on:
+#       - backend
+#     networks:
+#       - student-network
+
+# networks:
+#   student-network:
+#     driver: bridge
+
+
+
 services:
   backend:
     build:
       context: ./backend
     image: student-backend:1.0
     container_name: student-backend
-    expose:
-      - "5000"
+    ports:
+      - "5001:5000"
     networks:
       - student-network
 
@@ -15,7 +44,7 @@ services:
     image: student-frontend:1.0
     container_name: student-frontend
     ports:
-      - "8081:80"
+      - "8084:80"
     depends_on:
       - backend
     networks:
