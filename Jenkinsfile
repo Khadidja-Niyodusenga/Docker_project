@@ -8,6 +8,33 @@ pipeline {
             }
         }
 
+        stage('Docker Diagnosis') {
+    steps {
+        sh '''
+            echo "=== USER ==="
+            whoami
+
+            echo "=== HOSTNAME ==="
+            hostname
+
+            echo "=== PATH ==="
+            echo $PATH
+
+            echo "=== DOCKER FILE ==="
+            ls -l /usr/bin/docker || true
+
+            echo "=== DOCKER COMMAND ==="
+            command -v docker || true
+
+            echo "=== DOCKER VERSION ==="
+            docker --version || true
+
+            echo "=== DOCKER SOCKET ==="
+            ls -l /var/run/docker.sock || true
+        '''
+    }
+}
+
         stage('Build') {
             steps {
                 sh '/usr/bin/docker build -t student-frontend:latest ./frontend'
