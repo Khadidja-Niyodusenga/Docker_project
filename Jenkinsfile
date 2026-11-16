@@ -54,36 +54,55 @@ pipeline {
     agent any
 
     stages {
-        stage('Checkout') {
-            steps {
-                checkout scm
-                echo 'GitHub code downloaded successfully!'
-            }
-        }
-
         stage('Docker Diagnosis') {
             steps {
                 sh '''
                     echo "=== DOCKER VERSION ==="
                     docker --version
 
-                    echo "=== DOCKER COMPOSE VERSION ==="
-                    docker compose version
+                    echo "=== DOCKER CONNECTION ==="
+                    docker ps
                 '''
             }
         }
 
-        stage('Build') {
+        stage('Build Backend') {
             steps {
-                sh 'docker compose build'
+                sh 'docker build -t student-backend:1.0 ./backend'
+            }
+        }
+
+        stage('Build Frontend') {
+            steps {
+                sh 'docker build -t student-frontend:1.0 ./frontend'
             }
         }
 
         stage('Deploy') {
             steps {
                 sh '''
+                    echo "=== CREATE NETWORK ==="
+                    docker network inspect student-network >/dev/null 2>&1 || \
+                        docker network create student-network
+
+                    echo "=== REMOVE OLD CONTAINERS ==="
                     docker rm -f student-frontend student-backend || true
-                    docker compose up -d
+
+                    echo "=== START BACKEND ==="
+                    docker run -d \
+                        --name student-backend \
+                        --restart unless-stopped \
+                        --network student-network \
+                        -p 5001:5000 \
+                        student-backend:1.0
+
+                    echo "=== START FRONTEND ==="
+                    docker run -d \
+                        --name student-frontend \
+                        --restart unless-stopped \
+                        --network student-network \
+                        -p 8084:80 \
+                        student-frontend:1.0
                 '''
             }
         }
@@ -92,10 +111,10 @@ pipeline {
             steps {
                 sh '''
                     echo "=== RUNNING CONTAINERS ==="
-                    docker compose ps
-
-                    echo "=== ALL DOCKER CONTAINERS ==="
                     docker ps
+
+                    echo "=== NETWORK ==="
+                    docker network inspect student-network
                 '''
             }
         }
